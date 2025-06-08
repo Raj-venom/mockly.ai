@@ -14,7 +14,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Form, FormProvider, useForm } from "react-hook-form"
 import { z } from "zod"
-
+import { FaGithub, FaGoogle } from "react-icons/fa";
 
 const formSchema = z.object({
     email: z.string().email(),
@@ -47,6 +47,30 @@ export const SignInView = () => {
             {
                 onSuccess: () => {
                     router.push("/");
+                    setIsLoading(false);
+                    setError(null);
+
+                },
+                onError: ({ error }) => {
+                    setError(error.message);
+                    setIsLoading(false);
+                },
+            },
+
+        )
+    }
+
+    const onSocialSignIn = async (provider: "google" | "github") => {
+        setError(null);
+        setIsLoading(true);
+
+        const { } = await authClient.signIn.social(
+            {
+                provider,
+                callbackURL: "/",
+            },
+            {
+                onSuccess: () => {
                     setIsLoading(false);
                     setError(null);
 
@@ -135,16 +159,20 @@ export const SignInView = () => {
                                         type="button"
                                         variant="outline"
                                         className="w-full"
+                                        disabled={isLoading}
+                                        onClick={() => onSocialSignIn("google")}
                                     >
-                                        Google
+                                        <FaGoogle />
                                     </Button>
 
                                     <Button
                                         type="button"
                                         variant="outline"
                                         className="w-full"
+                                        disabled={isLoading}
+                                        onClick={() => onSocialSignIn("github")}
                                     >
-                                        Github
+                                        <FaGithub />
                                     </Button>
                                 </div>
 
