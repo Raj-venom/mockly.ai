@@ -47,8 +47,7 @@ const SecondSection = [
 
 export const DashboardSidebar = () => {
 
-    // const pathname = usePathname();
-    const pathname = "/meetings"; // For testing purposes, replace with usePathname() in production
+    const pathname = usePathname();
     return (
         <Sidebar>
             <SidebarHeader className="text-sidebar-accent-foreground">
