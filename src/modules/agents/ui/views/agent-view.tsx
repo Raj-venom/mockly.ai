@@ -6,6 +6,12 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { ErrorState } from "@/components/error-state";
 import { LoadingState } from "@/components/loading-state";
 import { useTRPC } from "@/trpc/client"
+import { DataTable } from "../components/data-table";
+import { columns } from "../components/columns";
+import { EmptyState } from "@/components/empty-state";
+
+
+
 
 export const AgentView = () => {
 
@@ -15,25 +21,24 @@ export const AgentView = () => {
     if (!data || data.length === 0) {
         return (
             <div>
-                <h1>No Agents Found</h1>
-                <p>There are currently no agents available.</p>
+                <EmptyState
+                    title="No Agents Found"
+                    description="You have not created any agents yet. Click the button below to create your first agent."
+
+                />
             </div>
         );
     }
 
     return (
-        <div>
+        <div
+            className="flex-1 pb-4 px-4 md:px-8 flex flex-col gap-y-4"
+        >
 
-            <h1>Agents</h1>
-            <ul>
-                {data.map(agent => (
-                    <li key={agent.id}>
-                        {agent.name} - {agent.instructions}
-                        <br />
-                        <strong>Created at:</strong> {new Date(agent.createdAt).toString()}
-                    </li>
-                ))}
-            </ul>
+            <DataTable
+                data={data}
+                columns={columns}
+            />
 
         </div>
     )
