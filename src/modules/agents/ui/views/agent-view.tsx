@@ -30,7 +30,7 @@ export const AgentView = () => {
                     <li key={agent.id}>
                         {agent.name} - {agent.instructions}
                         <br />
-                        <strong>Created at:</strong> {new Date(agent.createdAt).toLocaleString()}
+                        <strong>Created at:</strong> {new Date(agent.createdAt).toString()}
                     </li>
                 ))}
             </ul>

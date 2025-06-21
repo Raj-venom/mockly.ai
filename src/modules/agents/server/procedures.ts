@@ -1,20 +1,60 @@
 import { db } from "@/db";
 import { agents } from "@/db/schema";
-import { createTRPCRouter, baseProcedure } from "@/trpc/init";
+import { createTRPCRouter, baseProcedure, protectedProcedure } from "@/trpc/init";
 import { TRPCError } from "@trpc/server";
+import { agentsInsertSchema } from "../schema";
+import { z } from "zod";
+import { eq } from "drizzle-orm";
 
 
 export const agentsRouter = createTRPCRouter({
-    getMany: baseProcedure.query(async () => {
-        const data = await db
-            .select()
-            .from(agents);
 
+    // This procedure retrieves all agents from the loged-in user's account.
+    // It uses the protectedProcedure to ensure that only authenticated users can access it.
+    getMany: protectedProcedure
+        .query(async ({ ctx }) => {
+            const data = await db
+                .select()
+                .from(agents)
+                .where(eq(agents.userId, ctx.auth.user.id))
 
-        // await new Promise(resolve => setTimeout(resolve, 5000)); // Simulate a delay for demonstration purposes
+            return data;
+        }),
 
+    getOne: protectedProcedure
+        .input(z.object({ id: z.string() }))
+        .query(async ({ input }) => {
+            const { id } = input;
 
-        return data;
-    }),
+            const [existingAgent] = await db
+                .select()
+                .from(agents)
+                .where(eq(agents.id, id));
 
+            if (!existingAgent) {
+                throw new TRPCError({
+                    code: "NOT_FOUND",
+                    message: `Agent with id ${id} not found`,
+                });
+            }
+
+            return existingAgent;
+        }),
+
+    create: protectedProcedure
+        .input(agentsInsertSchema)
+        .mutation(async ({ input, ctx }) => {
+
+            const { instructions, name } = input;
+            const [createdAgent] = await db
+                .insert(agents)
+                .values({
+                    name: name,
+                    instructions: instructions,
+                    userId: ctx.auth.user.id,
+                })
+                .returning();
+
+            return createdAgent;
+        })
 });
