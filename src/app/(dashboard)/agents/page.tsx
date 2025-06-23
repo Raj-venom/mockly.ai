@@ -8,22 +8,28 @@ import { redirect } from 'next/navigation';
 import { Suspense } from 'react'
 import { ErrorBoundary } from "react-error-boundary";
 
-const AgentPage = async () => {
+import type { SearchParams } from 'nuqs';
+import { loadSearchParams } from '@/modules/agents/params';
+interface Props {
+    searchParams: Promise<SearchParams>
+}
 
+const AgentPage = async ({ searchParams }: Props) => {
+
+    const filters = await loadSearchParams(searchParams);
 
     const session = await auth.api.getSession({
         headers: await headers()
-
     });
 
     if (!session) {
         redirect("/sign-in");
     }
 
-
     const queryClient = getQueryClient();
-    void queryClient.prefetchQuery(trpc.agents.getMany.queryOptions());
-
+    void queryClient.prefetchQuery(trpc.agents.getMany.queryOptions({
+        ...filters // filter with search and page
+    }));
 
     return (
         <>
