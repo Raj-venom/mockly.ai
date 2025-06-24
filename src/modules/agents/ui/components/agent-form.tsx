@@ -24,6 +24,7 @@ import { toast } from "sonner";
 
 
 
+
 interface AgentFormProps {
     onSuccess?: () => void;
     onCancel?: () => void;
@@ -41,10 +42,27 @@ export const AgentForm = ({ onSuccess, onCancel, initialValues }: AgentFormProps
         trpc.agents.create.mutationOptions({
             onSuccess: async () => {
                 await queryClient.invalidateQueries(
-                    trpc.agents.getMany.queryOptions(),
+                    trpc.agents.getMany.queryOptions({}),
                 );
 
-                if (initialValues) {
+                onSuccess?.();
+            },
+            onError: (error) => {
+                toast.error(
+                    `Failed to create agent: ${error.message || "Unknown error"}`,
+                )
+            }
+        })
+    );
+
+    const UpdateAgent = useMutation(
+        trpc.agents.update.mutationOptions({
+            onSuccess: async () => {
+                await queryClient.invalidateQueries(
+                    trpc.agents.getMany.queryOptions({}),
+                );
+
+                if (initialValues?.id) {
                     await queryClient.invalidateQueries(
                         trpc.agents.getOne.queryOptions({ id: initialValues.id }),
                     )
@@ -60,6 +78,7 @@ export const AgentForm = ({ onSuccess, onCancel, initialValues }: AgentFormProps
         })
     );
 
+
     const form = useForm<z.infer<typeof agentsInsertSchema>>({
         resolver: zodResolver(agentsInsertSchema),
         defaultValues: {
@@ -69,11 +88,11 @@ export const AgentForm = ({ onSuccess, onCancel, initialValues }: AgentFormProps
     })
 
     const isEdit = !!initialValues;
-    const isPending = createAgent.isPending;
+    const isPending = createAgent.isPending || UpdateAgent.isPending;
 
     const onSubmit = (value: z.infer<typeof agentsInsertSchema>) => {
         if (isEdit) {
-            console.log("Updating agent", value);
+            UpdateAgent.mutate({ ...value, id: initialValues.id });
         } else {
             createAgent.mutate(value);
         }
