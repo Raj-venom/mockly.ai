@@ -18,7 +18,6 @@ import { ChevronDownIcon, CreditCardIcon, LogOutIcon } from "lucide-react";
 
 import {
     Drawer,
-    DrawerClose,
     DrawerContent,
     DrawerDescription,
     DrawerFooter,

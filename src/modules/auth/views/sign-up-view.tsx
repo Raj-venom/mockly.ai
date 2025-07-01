@@ -12,7 +12,7 @@ import { Loader2, OctagonAlertIcon } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Form, FormProvider, useForm } from "react-hook-form"
+import { FormProvider, useForm } from "react-hook-form"
 import { z } from "zod"
 import { FaGithub, FaGoogle } from "react-icons/fa";
 

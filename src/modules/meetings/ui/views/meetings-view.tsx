@@ -10,6 +10,8 @@ export const MeetingsView = () => {
     const trpc = useTRPC();
     const { data } = useSuspenseQuery(trpc.meetings.getMany.queryOptions({}))
 
+    console.log(data.items.map(item => item.name), "meetings data");
+
     if (!data || data.items.length === 0) {
         return (
             <div>
@@ -20,7 +22,13 @@ export const MeetingsView = () => {
 
     return (
         <div>
-            {JSON.stringify(data.items, null, 2)}
+            <span>
+                {data.items.map((meeting) => (
+                    <div key={meeting.id} className="py-2 px-4 border-b">
+                        <h3 className="text-lg font-semibold">{meeting.name}</h3>
+                    </div>
+                ))}
+            </span>
         </div>
     )
 }
