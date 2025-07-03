@@ -16,7 +16,6 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form"
-// import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useState } from "react";
@@ -24,8 +23,6 @@ import { CommandSelect } from "@/components/command-select";
 import { GeneratedAvatar } from "@/components/generated-avatar";
 import { useDebounce } from "@/hooks/use-debounce";
 import { NewAgentDialog } from "@/modules/agents/ui/components/new-agent-dialog";
-
-
 
 
 interface MeetingFormProps {
@@ -37,12 +34,11 @@ interface MeetingFormProps {
 export const MeetingForm = ({ onSuccess, onCancel, initialValues }: MeetingFormProps) => {
 
     const trpc = useTRPC();
-    // const router = useRouter();
     const queryClient = useQueryClient();
 
     const [openNewAgentDialog, setOpenNewAgentDialog] = useState(false);
     const [agentSearch, setAgentSearch] = useState<string>("");
-    const debouncedAgentSearch = useDebounce(agentSearch, 220);
+    const debouncedAgentSearch = useDebounce(agentSearch, 100);
 
     const agents = useQuery(
         trpc.agents.getMany.queryOptions({

@@ -1,34 +1,21 @@
 "use client"
 
+import { DataTable } from "@/components/data-table";
 import { ErrorState } from "@/components/error-state";
 import { LoadingState } from "@/components/loading-state";
 import { useTRPC } from "@/trpc/client"
 import { useSuspenseQuery } from "@tanstack/react-query";
+import { columns } from "../components/columns";
 
 export const MeetingsView = () => {
 
     const trpc = useTRPC();
     const { data } = useSuspenseQuery(trpc.meetings.getMany.queryOptions({}))
 
-    console.log(data.items.map(item => item.name), "meetings data");
-
-    if (!data || data.items.length === 0) {
-        return (
-            <div>
-                <p>No meetings found.</p>
-            </div>
-        );
-    }
 
     return (
-        <div>
-            <span>
-                {data.items.map((meeting) => (
-                    <div key={meeting.id} className="py-2 px-4 border-b">
-                        <h3 className="text-lg font-semibold">{meeting.name}</h3>
-                    </div>
-                ))}
-            </span>
+        <div className="flex-1 pb-4 px-4 md:px-8 flex flex-col gap-y-4">
+            <DataTable data={data.items} columns={columns} />
         </div>
     )
 }
